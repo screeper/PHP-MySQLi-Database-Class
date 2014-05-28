@@ -133,23 +133,23 @@ $results = $db->get('users');
 ```
 
 ```php
-$db->where('id', Array('>=' => 50));
+$db->where('id', 50, ">=");
 $results = $db->get('users');
 // Gives: SELECT * FROM users WHERE id >= 50;
 ```
 
 BETWEEN:
 ```php
-$db->where('id', Array('between' => Array(4, 20) ) );
-//$db->where('id', Array('not between' => Array(4, 20) ) );
+$db->where('id', Array(4, 20), 'between');
+//$db->where('id', Array(4, 20), 'not between');
 $results = $db->get('users');
 // Gives: SELECT * FROM users WHERE id BETWEEN 4 AND 20
 ```
 
 IN:
 ```php
-$db->where('id', Array( 'in' => Array(1, 5, 27, -1, 'd') ) );
-//$db->where('id', Array( 'not in' => Array(1, 5, 27, -1, 'd') ) );
+$db->where('id', Array(1, 5, 27, -1, 'd'), 'IN');
+//$db->where('id', Array(1, 5, 27, -1, 'd'), 'NOT IN');
 $results = $db->get('users');
 // Gives: SELECT * FROM users WHERE id IN (1, 5, 27, -1, 'd');
 ```
@@ -164,7 +164,7 @@ $results = $db->get('users');
 
 NULL comparison:
 ```php
-$db->where ("lastName", Array("<=>" => NULL));
+$db->where ("lastName", NULL, '<=>');
 $results = $db->get("users");
 // Gives: SELECT * FROM users where lastName <=> NULL
 ```
@@ -216,6 +216,13 @@ $products = $db->get ("products p", null, "u.name, p.productName");
 print_r ($products);
 ```
 
+### Subqueries
+```php
+$ids = $db->subQuery()->where("qty", 2, ">")->get("products", null, "userId");
+$db->where("id", $ids, 'in');
+$res = $db->get ("users");
+// Gives SELECT * FROM users WHERE id IN (SELECT userId FROM products WHERE qty > 2)
+```
 ### Helper commands
 Reconnect in case mysql connection died
 ```php
